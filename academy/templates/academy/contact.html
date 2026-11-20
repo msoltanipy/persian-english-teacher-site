@@ -1,0 +1,84 @@
+{% extends "academy/base.html" %}
+
+{% block title %}تماس با من | {{ teacher_profile.full_name|default:"آموزش زبان انگلیسی" }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>تماس با من و مشاوره آموزشی</h1>
+    <p>برای تعیین سطح، مشاوره کلاس‌های زبان یا پیگیری سفارش جزوات، از فرم زیر یا تلگرام پیام دهید.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container detail-layout">
+    <div class="surface-box">
+      <h2 style="margin-top:0;">ارسال پیام مستقیم</h2>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="alert alert-error" style="margin-top:8px; padding:8px 12px; font-size:0.86rem;">
+                {{ field.errors|striptags }}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+        <button class="btn btn-primary btn-block" type="submit">ارسال پیام</button>
+      </form>
+    </div>
+
+    <aside style="display:grid; gap:20px;">
+      <div class="surface-box">
+        <h3 style="margin-top:0;">راه‌های ارتباطی سریع</h3>
+        <ul class="checklist">
+          <li>
+            <span class="check-dot">✈</span>
+            <span>
+              <strong>تلگرام:</strong>
+              <a href="https://t.me/{{ telegram_username }}" target="_blank" rel="noopener noreferrer" dir="ltr" style="color:var(--telegram); font-weight:700;">@{{ telegram_username }}</a>
+            </span>
+          </li>
+          {% if teacher_profile.email %}
+          <li>
+            <span class="check-dot">@</span>
+            <span>
+              <strong>ایمیل:</strong>
+              <a href="mailto:{{ teacher_profile.email }}" dir="ltr">{{ teacher_profile.email }}</a>
+            </span>
+          </li>
+          {% endif %}
+          {% if teacher_profile.phone %}
+          <li>
+            <span class="check-dot">☎</span>
+            <span><strong>تلفن:</strong> <span dir="ltr">{{ teacher_profile.phone }}</span></span>
+          </li>
+          {% endif %}
+          {% if teacher_profile.office_hours %}
+          <li>
+            <span class="check-dot">◷</span>
+            <span><strong>ساعات پاسخ‌گویی:</strong> {{ teacher_profile.office_hours }}</span>
+          </li>
+          {% endif %}
+        </ul>
+
+        <div style="margin-top:20px;">
+          <a class="btn btn-telegram btn-block" href="{{ teacher_profile.get_telegram_contact_url|default:'https://t.me/inatlosm' }}" target="_blank" rel="noopener noreferrer">
+            شروع گفتگو در تلگرام با پیام آماده
+          </a>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}

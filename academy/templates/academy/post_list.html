@@ -1,0 +1,58 @@
+{% extends "academy/base.html" %}
+{% load persian_extras %}
+
+{% block title %}مقالات آموزشی | {{ teacher_profile.full_name|default:"آموزش زبان انگلیسی" }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>مقالات و نوشته‌های آموزشی</h1>
+    <p>نکات کاربردی گرامر، مکالمه، واژگان و تکنیک‌های یادگیری سریع‌تر زبان انگلیسی</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="filter-bar">
+      <div class="filter-pills">
+        <a class="filter-pill {% if not active_category %}active{% endif %}" href="{% url 'academy:post_list' %}">همه مقالات</a>
+        {% for cat in categories %}
+          <a class="filter-pill {% if active_category == cat.slug %}active{% endif %}" href="?category={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}">
+            {{ cat.name }}
+          </a>
+        {% endfor %}
+      </div>
+      <form class="search-form" method="get">
+        {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
+        <input class="form-input" type="search" name="q" value="{{ search_query }}" placeholder="جستجو در مقالات...">
+        <button class="btn btn-primary btn-sm" type="submit">جستجو</button>
+      </form>
+    </div>
+
+    {% if posts %}
+      <div class="grid-3">
+        {% for post in posts %}
+          <article class="card">
+            <a href="{{ post.get_absolute_url }}" class="card-cover">
+              {% if post.cover_image %}
+                <img src="{{ post.cover_image.url }}" alt="{{ post.title }}">
+              {% endif %}
+              <div class="badge-row">
+                {% if post.category %}<span class="badge">{{ post.category.name }}</span>{% endif %}
+                <span class="badge">{{ post.reading_minutes|fa_digits }} دقیقه</span>
+              </div>
+              <div class="card-cover-title">{{ post.title }}</div>
+            </a>
+            <div class="card-body">
+              <p class="card-text">{{ post.excerpt }}</p>
+              <a class="btn btn-outline btn-sm btn-block" href="{{ post.get_absolute_url }}">مطالعه کامل</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">مقاله‌ای با این فیلتر پیدا نشد.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

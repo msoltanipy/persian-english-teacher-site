@@ -1,0 +1,71 @@
+{% extends "academy/base.html" %}
+{% load persian_extras %}
+
+{% block title %}جزوات و کتابچه‌ها | {{ teacher_profile.full_name|default:"آموزش زبان انگلیسی" }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <h1>فروشگاه جزوات و کتابچه‌های آموزشی</h1>
+    <p>منابع خلاصه، کاربردی و تالیفی زبان انگلیسی — سفارش مستقیم و سریع از طریق تلگرام (<span dir="ltr">@{{ telegram_username }}</span>)</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="filter-bar">
+      <div class="filter-pills">
+        <a class="filter-pill {% if not active_type %}active{% endif %}" href="{% url 'academy:booklet_list' %}">همه منابع</a>
+        <a class="filter-pill {% if active_type == 'pamphlet' %}active{% endif %}" href="?type=pamphlet{% if search_query %}&q={{ search_query }}{% endif %}">جزوه‌ها</a>
+        <a class="filter-pill {% if active_type == 'booklet' %}active{% endif %}" href="?type=booklet{% if search_query %}&q={{ search_query }}{% endif %}">کتابچه‌ها</a>
+      </div>
+
+      <form class="search-form" method="get">
+        {% if active_type %}<input type="hidden" name="type" value="{{ active_type }}">{% endif %}
+        <input class="form-input" type="search" name="q" value="{{ search_query }}" placeholder="جستجو در جزوات و کتابچه‌ها...">
+        <button class="btn btn-primary btn-sm" type="submit">جستجو</button>
+      </form>
+    </div>
+
+    {% if booklets %}
+      <div class="grid-3">
+        {% for item in booklets %}
+          <article class="card">
+            <a href="{{ item.get_absolute_url }}" class="card-cover card-cover-booklet">
+              {% if item.cover_image %}
+                <img src="{{ item.cover_image.url }}" alt="{{ item.title }}">
+              {% endif %}
+              <div class="badge-row">
+                <span class="badge">{{ item.get_item_type_display }}</span>
+                <span class="badge">{{ item.get_level_display }}</span>
+              </div>
+              <div class="card-cover-title">{{ item.title }}</div>
+            </a>
+            <div class="card-body">
+              <div class="card-meta">
+                <span>{{ item.get_delivery_format_display }}</span>
+                <span>{{ item.pages_count|fa_digits }} صفحه</span>
+              </div>
+              <p class="card-text">{{ item.short_description }}</p>
+              <div class="price-block">
+                <span class="price-current">{{ item.effective_price|toman }} تومان</span>
+                {% if item.has_discount %}
+                  <span class="price-old">{{ item.price_toman|toman }} تومان</span>
+                {% endif %}
+              </div>
+              <div class="card-actions">
+                <a class="btn btn-telegram btn-sm btn-block" href="{{ item.telegram_url }}" target="_blank" rel="noopener noreferrer">
+                  خرید و ارسال پیام در تلگرام
+                </a>
+                <a class="btn btn-outline btn-sm" href="{{ item.get_absolute_url }}">جزئیات</a>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">موردی مطابق با جستجوی شما پیدا نشد.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

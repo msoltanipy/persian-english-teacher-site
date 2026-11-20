@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ teacher_profile.full_name|default:"آموزش زبان انگلیسی" }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'academy/css/style.css' %}">
+</head>
+<body>
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <a class="brand" href="{% url 'academy:home' %}">
+        <span class="brand-mark">EN</span>
+        <span>
+          {{ teacher_profile.full_name|default:"آموزش زبان انگلیسی" }}
+          <span class="brand-sub">وب‌سایت شخصی تدریس زبان انگلیسی</span>
+        </span>
+      </a>
+
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="منو">منو</button>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="{% url 'academy:home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">خانه</a>
+        <a href="{% url 'academy:profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">پروفایل مدرس</a>
+        <a href="{% url 'academy:booklet_list' %}" class="{% if 'booklet' in request.resolver_match.url_name %}active{% endif %}">جزوات و کتابچه‌ها</a>
+        <a href="{% url 'academy:post_list' %}" class="{% if 'post' in request.resolver_match.url_name %}active{% endif %}">مقالات آموزشی</a>
+        <a href="{% url 'academy:contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">تماس با من</a>
+        <a class="btn btn-telegram btn-sm" href="https://t.me/{{ telegram_username }}" target="_blank" rel="noopener noreferrer">
+          تلگرام <span dir="ltr">@{{ telegram_username }}</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h3>{{ teacher_profile.full_name|default:"آموزش زبان انگلیسی" }}</h3>
+          <p>{{ teacher_profile.short_bio|default:"آموزش اصولی و کاربردی زبان انگلیسی با تمرکز بر مکالمه، گرامر و منابع طبقه‌بندی‌شده." }}</p>
+        </div>
+        <div>
+          <h3>دسترسی سریع</h3>
+          <ul class="footer-links">
+            <li><a href="{% url 'academy:profile' %}">پروفایل و سوابق تدریس</a></li>
+            <li><a href="{% url 'academy:booklet_list' %}">جزوات و کتابچه‌ها</a></li>
+            <li><a href="{% url 'academy:post_list' %}">مقالات و نکات آموزشی</a></li>
+            <li><a href="{% url 'academy:contact' %}">فرم تماس و مشاوره</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>ارتباط مستقیم</h3>
+          <ul class="footer-links">
+            <li>
+              <a href="https://t.me/{{ telegram_username }}" target="_blank" rel="noopener noreferrer">
+                تلگرام: <span dir="ltr">@{{ telegram_username }}</span>
+              </a>
+            </li>
+            {% if teacher_profile.email %}
+            <li>
+              <a href="mailto:{{ teacher_profile.email }}">
+                ایمیل: <span dir="ltr">{{ teacher_profile.email }}</span>
+              </a>
+            </li>
+            {% endif %}
+            {% if teacher_profile.office_hours %}
+            <li>پاسخ‌گویی: {{ teacher_profile.office_hours }}</li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© تمامی حقوق برای {{ teacher_profile.full_name|default:"مدرس زبان انگلیسی" }} محفوظ است.</span>
+        <a href="/admin/">ورود به پنل مدیریت</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'academy/js/main.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+{% extends "academy/base.html" %}
+{% load persian_extras %}
+
+{% block title %}خانه | {{ teacher_profile.full_name|default:"آموزش زبان انگلیسی" }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="pill">آموزش مدرن و کاربردی زبان انگلیسی</span>
+      <h1>یادگیری زبان انگلیسی با روش ساختاریافته، روان و قابل لمس</h1>
+      <p class="hero-lead">
+        {{ teacher_profile.short_bio|default:"با مقالات رایگان، جزوات خلاصه و کلاس‌های هدفمند، مسیر یادگیری زبان انگلیسی را شفاف و لذت‌بخش کنید." }}
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="{% url 'academy:booklet_list' %}">مشاهده جزوات و کتابچه‌ها</a>
+        <a class="btn btn-telegram" href="{{ teacher_profile.get_telegram_contact_url|default:'https://t.me/inatlosm' }}" target="_blank" rel="noopener noreferrer">
+          پیام مستقیم در تلگرام (<span dir="ltr">@{{ telegram_username }}</span>)
+        </a>
+        <a class="btn btn-outline" href="{% url 'academy:profile' %}">درباره مدرس</a>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="avatar-wrap">
+        {% if teacher_profile.avatar %}
+          <img src="{{ teacher_profile.avatar.url }}" alt="{{ teacher_profile.full_name }}">
+        {% else %}
+          MS
+        {% endif %}
+      </div>
+      <h2>{{ teacher_profile.full_name|default:"مدرس زبان انگلیسی" }}</h2>
+      <p class="hero-card-role">{{ teacher_profile.headline|default:"مدرس تخصصی زبان انگلیسی" }}</p>
+      {% if teacher_profile %}
+        <ul class="checklist">
+          {% for spec in teacher_profile.get_specialties_list|slice:":3" %}
+            <li><span class="check-dot">✓</span><span>{{ spec }}</span></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-num">{{ booklets_count|fa_digits }}</span>
+          <span class="stat-label">جزوه و کتابچه فعال</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">{{ posts_count|fa_digits }}</span>
+          <span class="stat-label">مقاله آموزشی رایگان</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">جزوات و کتابچه‌های آموزشی</h2>
+        <p class="section-sub">با کلیک روی دکمه سفارش تلگرام، پیام آماده فارسی مستقیماً به آیدی <span dir="ltr">@{{ telegram_username }}</span> ارسال می‌شود.</p>
+      </div>
+      <a class="btn btn-outline btn-sm" href="{% url 'academy:booklet_list' %}">مشاهده همه جزوات</a>
+    </div>
+
+    {% if featured_booklets %}
+      <div class="grid-3">
+        {% for item in featured_booklets|slice:":3" %}
+          <article class="card">
+            <a href="{{ item.get_absolute_url }}" class="card-cover card-cover-booklet">
+              {% if item.cover_image %}
+                <img src="{{ item.cover_image.url }}" alt="{{ item.title }}">
+              {% endif %}
+              <div class="badge-row">
+                <span class="badge">{{ item.get_item_type_display }}</span>
+                <span class="badge">{{ item.get_level_display }}</span>
+              </div>
+              <div class="card-cover-title">{{ item.title }}</div>
+            </a>
+            <div class="card-body">
+              <div class="card-meta">
+                <span>{{ item.get_delivery_format_display }}</span>
+                <span>{{ item.pages_count|fa_digits }} صفحه</span>
+              </div>
+              <p class="card-text">{{ item.short_description }}</p>
+              <div class="price-block">
+                <span class="price-current">{{ item.effective_price|toman }} تومان</span>
+                {% if item.has_discount %}
+                  <span class="price-old">{{ item.price_toman|toman }} تومان</span>
+                {% endif %}
+              </div>
+              <div class="card-actions">
+                <a class="btn btn-telegram btn-sm btn-block" href="{{ item.telegram_url }}" target="_blank" rel="noopener noreferrer">
+                  سفارش در تلگرام
+                </a>
+                <a class="btn btn-outline btn-sm" href="{{ item.get_absolute_url }}">جزئیات</a>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">هنوز جزوه یا کتابچه‌ای ثبت نشده است. از پنل مدیریت اضافه کنید.</div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section" style="padding-top: 12px;">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">جدیدترین مقالات و نکات آموزشی</h2>
+        <p class="section-sub">نکات کوتاه و کاربردی گرامر، مکالمه و واژگان برای پیشرفت روزانه</p>
+      </div>
+      <a class="btn btn-outline btn-sm" href="{% url 'academy:post_list' %}">همه مقالات</a>
+    </div>
+
+    {% if latest_posts %}
+      <div class="grid-3">
+        {% for post in latest_posts %}
+          <article class="card">
+            <a href="{{ post.get_absolute_url }}" class="card-cover">
+              {% if post.cover_image %}
+                <img src="{{ post.cover_image.url }}" alt="{{ post.title }}">
+              {% endif %}
+              <div class="badge-row">
+                {% if post.category %}<span class="badge">{{ post.category.name }}</span>{% endif %}
+                <span class="badge">{{ post.reading_minutes|fa_digits }} دقیقه مطالعه</span>
+              </div>
+              <div class="card-cover-title">{{ post.title }}</div>
+            </a>
+            <div class="card-body">
+              <p class="card-text">{{ post.excerpt }}</p>
+              <a class="btn btn-outline btn-sm btn-block" href="{{ post.get_absolute_url }}">مطالعه مقاله</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">هنوز مقاله‌ای منتشر نشده است.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "academy/base.html" %}
+{% load persian_extras %}
+
+{% block title %}{{ booklet.title }} | جزوات و کتابچه‌ها{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <div class="badge-row" style="margin-bottom:12px;">
+      <span class="badge badge-soft">{{ booklet.get_item_type_display }}</span>
+      <span class="badge badge-amber">{{ booklet.get_level_display }}</span>
+      <span class="badge badge-soft">{{ booklet.get_delivery_format_display }}</span>
+    </div>
+    <h1>{{ booklet.title }}</h1>
+    <p>{{ booklet.short_description }}</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container detail-layout">
+    <div class="surface-box prose">
+      {% if booklet.cover_image %}
+        <img src="{{ booklet.cover_image.url }}" alt="{{ booklet.title }}" style="border-radius:14px; margin-bottom:24px; width:100%; max-height:360px; object-fit:cover;">
+      {% endif %}
+
+      <h3>معرفی و توضیحات کامل</h3>
+      <p>{{ booklet.description }}</p>
+
+      {% if booklet.get_highlights_list %}
+        <h3>ویژگی‌ها و سرفصل‌های کلیدی</h3>
+        <ul class="checklist">
+          {% for h in booklet.get_highlights_list %}
+            <li><span class="check-dot">✓</span><span>{{ h }}</span></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    <aside class="surface-box" style="position:sticky; top:96px;">
+      <div class="card-meta" style="margin-bottom:10px;">
+        <span>تعداد صفحات: {{ booklet.pages_count|fa_digits }} صفحه</span>
+        <span>{{ booklet.get_delivery_format_display }}</span>
+      </div>
+
+      <div class="price-block">
+        <span class="price-current" style="font-size:1.6rem;">{{ booklet.effective_price|toman }} تومان</span>
+        {% if booklet.has_discount %}
+          <span class="price-old">{{ booklet.price_toman|toman }} تومان</span>
+        {% endif %}
+      </div>
+
+      <div class="telegram-preview">
+        <strong>متن پیام آماده فارسی برای تلگرام (<span dir="ltr">@{{ telegram_username }}</span>):</strong>
+        <p style="margin:8px 0 0;">{{ telegram_message }}</p>
+      </div>
+
+      <div style="display:grid; gap:10px;">
+        <a class="btn btn-telegram btn-block" href="{{ telegram_url }}" target="_blank" rel="noopener noreferrer">
+          ارسال پیام سفارش به تلگرام <span dir="ltr">@{{ telegram_username }}</span>
+        </a>
+        <button class="btn btn-outline btn-sm btn-block" type="button" data-copy-text="{{ telegram_message }}">
+          کپی متن پیام سفارش
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  {% if other_booklets %}
+    <div class="container" style="margin-top:48px;">
+      <h2 class="section-title" style="margin-bottom:20px;">سایر جزوات و کتابچه‌ها</h2>
+      <div class="grid-3">
+        {% for item in other_booklets %}
+          <article class="card">
+            <div class="card-body">
+              <div class="card-meta">
+                <span>{{ item.get_item_type_display }}</span>
+                <span>{{ item.get_level_display }}</span>
+              </div>
+              <h3 class="card-title">{{ item.title }}</h3>
+              <div class="price-block">
+                <span class="price-current">{{ item.effective_price|toman }} تومان</span>
+              </div>
+              <div class="card-actions">
+                <a class="btn btn-telegram btn-sm btn-block" href="{{ item.telegram_url }}" target="_blank" rel="noopener noreferrer">سفارش تلگرام</a>
+                <a class="btn btn-outline btn-sm" href="{{ item.get_absolute_url }}">جزئیات</a>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

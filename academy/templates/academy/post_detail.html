@@ -1,0 +1,58 @@
+{% extends "academy/base.html" %}
+{% load persian_extras %}
+
+{% block title %}{{ post.title }} | مقالات آموزشی{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <div class="badge-row" style="margin-bottom:12px;">
+      {% if post.category %}<span class="badge badge-soft">{{ post.category.name }}</span>{% endif %}
+      <span class="badge badge-amber">زمان مطالعه: {{ post.reading_minutes|fa_digits }} دقیقه</span>
+    </div>
+    <h1>{{ post.title }}</h1>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container detail-layout">
+    <article class="surface-box prose">
+      {% if post.cover_image %}
+        <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" style="border-radius:14px; margin-bottom:24px; width:100%; max-height:360px; object-fit:cover;">
+      {% endif %}
+      <p style="font-size:1.06rem; font-weight:600; color:var(--ink);">{{ post.excerpt }}</p>
+      <p>{{ post.content }}</p>
+
+      {% if post.english_tip %}
+        <div class="english-box">
+          <span class="english-box-label">English Example &amp; Tip</span>
+          {{ post.english_tip }}
+        </div>
+      {% endif %}
+
+      <div style="margin-top:28px; padding-top:20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <a class="btn btn-outline btn-sm" href="{% url 'academy:post_list' %}">بازگشت به همه مقالات</a>
+        <a class="btn btn-telegram btn-sm" href="https://t.me/{{ telegram_username }}" target="_blank" rel="noopener noreferrer">سوالی دارید؟ پیام در تلگرام</a>
+      </div>
+    </article>
+
+    <aside style="display:grid; gap:20px;">
+      <div class="surface-box">
+        <h3 style="margin-top:0;">مقالات پیشنهادی</h3>
+        {% if related_posts %}
+          <ul class="checklist">
+            {% for item in related_posts %}
+              <li>
+                <span class="check-dot">←</span>
+                <a href="{{ item.get_absolute_url }}" style="font-weight:600; color:var(--ink);">{{ item.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p style="color:var(--ink-muted); margin:0;">مقاله دیگری ثبت نشده است.</p>
+        {% endif %}
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
